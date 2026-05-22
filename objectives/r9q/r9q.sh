@@ -20,19 +20,19 @@
 # SOFTWARE.
 #
 
-# Galaxy S21 FE 5G config
-CODENAME="r9q"
+# Galaxy S21 5G config
+CODENAME="o1q"
 PLATFORM="sm8350"
 
 # Stock firmware details for download
-STOCK_MODEL="SM-G990B"
-STOCK_CSC="EUX"
-STOCK_IMEI="353718681151510"
+STOCK_MODEL="SCG09"
+STOCK_CSC="KDI"
+STOCK_IMEI="356953790634471"
 
 # Source firmware details for download
-MODEL="SM-G990B"
+MODEL="SM-S948B"
 CSC="EUX"
-IMEI="353718681151510"
+IMEI="351940430819088"
 
 # Extra firmware (Optional) details for download
 EXTRA_MODEL=""
