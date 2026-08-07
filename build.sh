@@ -17,6 +17,9 @@
 
 set -o pipefail
 
+# حل مشكلة التشفير مع Node.js الإصدارات الحديثة (OpenSSL 3)
+export NODE_OPTIONS="--openssl-legacy-provider"
+
 ASTROROM="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export ASTROROM
 
