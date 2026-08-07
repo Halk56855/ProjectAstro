@@ -33,7 +33,7 @@ jobs:
             bash \
             nodejs \
             procps \
-            openjdk-17-jdk
+            default-jdk
             
       - name: Checkout Repository
         uses: actions/checkout@v4
