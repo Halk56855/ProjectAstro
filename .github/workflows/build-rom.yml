@@ -1,12 +1,12 @@
 name: Build AstroROM
-run-name: Building ROM > ${{ inputs.device }}
+run-name: Building ROM for ${{ inputs.device }}
 on:
   workflow_dispatch:
     inputs:
       device:
-        description: 'Choose objective'
+        description: 'Choose objective / Device Model'
         required: true
-        default: ''
+        default: 'SM-A045F'
       upload_cloud:
         description: 'Upload ROM to cloud (PixelDrain)'
         required: false
@@ -55,9 +55,10 @@ jobs:
         run: df -h /
 
       - name: Run AstroROM Build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         run: |
           sudo bash build.sh --build ${{ inputs.device }}
-
 
       - name: Download PixelDrain CLI (pd)
         if: ${{ inputs.upload_cloud }}
@@ -72,13 +73,18 @@ jobs:
         env:
           PIXELDRAIN_API_KEY: ${{ secrets.PIXELDRAIN_API_KEY }}
         run: |
-          cd out
-          ROM_FILE=$(ls *.zip | head -n 1)
+          if [ -d "out" ]; then
+            cd out
+            ROM_FILE=$(ls *.zip 2>/dev/null | head -n 1)
 
-          if [ -z "$ROM_FILE" ]; then
-            echo "No ROM zip found!"
+            if [ -z "$ROM_FILE" ]; then
+              echo "No ROM zip found in out directory!"
+              exit 1
+            fi
+
+            echo "Uploading $ROM_FILE to PixelDrain..."
+            pd --api-key "$PIXELDRAIN_API_KEY" upload "$ROM_FILE" | sed 's|api/file|u|g'
+          else
+            echo "Error: 'out' directory does not exist!"
             exit 1
           fi
-
-          echo "Uploading $ROM_FILE to PixelDrain..."
-          pd --api-key "$PIXELDRAIN_API_KEY" upload "$ROM_FILE" | sed 's|api/file|u|g'
