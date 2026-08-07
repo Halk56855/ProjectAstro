@@ -55,10 +55,8 @@ jobs:
         run: df -h /
 
       - name: Run AstroROM Build
-        env:
-          NODE_OPTIONS: --openssl-legacy-provider
         run: |
-          sudo bash build.sh --build ${{ inputs.device }}
+          sudo NODE_OPTIONS="--openssl-legacy-provider" bash build.sh --build ${{ inputs.device }}
 
       - name: Download PixelDrain CLI (pd)
         if: ${{ inputs.upload_cloud }}
