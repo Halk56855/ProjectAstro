@@ -16,47 +16,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    container:
+      image: debian:13
 
     steps:
+      - name: Install essential tools
+        run: |
+          apt-get update && apt-get install -y git curl rsync gawk coreutils findutils util-linux bash nodejs
+
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Free disk space (1/4) - System Junk
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          sudo docker image prune --all --force
-          sudo docker builder prune -a
-
-      - name: Free disk space (2/4) - Tool Cache
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
-      - name: Free disk space (3/4)
-        uses: rokibhasansagar/slimhub_actions@main
-        with:
-          retain: 'compiler_cmake'
-
-      - name: Free disk space (4/4)
-        run: |
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf /usr/share/swift
-          sudo rm -rf /usr/local/lib/node_modules
-          sudo rm -rf /usr/local/share/chromium
-          sudo rm -rf /usr/share/sbt
-          sudo apt-get clean
 
       - name: Disk Space Check
         run: df -h /
 
       - name: Run AstroROM Build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         run: |
-          sudo NODE_OPTIONS="--openssl-legacy-provider" bash build.sh --build ${{ inputs.device }}
+          bash build.sh --build ${{ inputs.device }}
 
       - name: Download PixelDrain CLI (pd)
         if: ${{ inputs.upload_cloud }}
@@ -64,7 +42,7 @@ jobs:
           curl -L https://github.com/jkawamoto/go-pixeldrain/releases/download/v0.7.6/pd_0.7.6_linux_amd64.tar.gz -o pd.tar.gz
           tar -xvf pd.tar.gz
           chmod +x pd
-          sudo mv pd /usr/local/bin/pd
+          mv pd /usr/local/bin/pd
           
       - name: Upload ROM to PixelDrain
         if: ${{ inputs.upload_cloud }}
