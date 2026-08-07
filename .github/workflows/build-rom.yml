@@ -22,8 +22,19 @@ jobs:
     steps:
       - name: Install essential tools
         run: |
-          apt-get update && apt-get install -y git curl rsync gawk coreutils findutils util-linux bash nodejs
-
+          apt-get update && apt-get install -y \
+            git \
+            curl \
+            rsync \
+            gawk \
+            coreutils \
+            findutils \
+            util-linux \
+            bash \
+            nodejs \
+            procps \
+            openjdk-17-jdk
+            
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -35,7 +46,7 @@ jobs:
           NODE_OPTIONS: --openssl-legacy-provider
         run: |
           bash build.sh --build ${{ inputs.device }}
-
+          
       - name: Download PixelDrain CLI (pd)
         if: ${{ inputs.upload_cloud }}
         run: |
@@ -52,12 +63,10 @@ jobs:
           if [ -d "out" ]; then
             cd out
             ROM_FILE=$(ls *.zip 2>/dev/null | head -n 1)
-
             if [ -z "$ROM_FILE" ]; then
               echo "No ROM zip found in out directory!"
               exit 1
             fi
-
             echo "Uploading $ROM_FILE to PixelDrain..."
             pd --api-key "$PIXELDRAIN_API_KEY" upload "$ROM_FILE" | sed 's|api/file|u|g'
           else
